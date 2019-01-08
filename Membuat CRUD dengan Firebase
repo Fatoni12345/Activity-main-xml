@@ -1,0 +1,521 @@
+ activity_main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout         xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context="@android:color/holo_orange_dark">
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@android:color/holo_orange_light"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
+    </android.support.design.widget.AppBarLayout>
+    <include layout="@layout/content_main" />
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        app:backgroundTint="@android:color/holo_purple"
+        app:srcCompat="@android:drawable/ic_input_add" />
+</android.support.design.widget.CoordinatorLayout>
+
+
+content_main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/content_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="fery.crudsqlite.MainActivity"
+    tools:showIn="@layout/activity_main">
+    <ListView
+        android:id="@+id/list_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</RelativeLayout>
+
+
+list_row.xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+    <TextView
+        android:id="@+id/name"
+        android:layout_marginBottom="5dp"
+        android:textStyle="bold"
+        android:textSize="16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:id="@+id/address"
+        android:textSize="16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+</LinearLayout>
+
+activity_add_edit.xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_add_edit"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="fery.crudsqlite.AddEdit">
+    <EditText
+        android:id="@+id/txt_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:visibility="gone"/>
+    <EditText
+        android:id="@+id/txt_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Input Name"/>
+    <EditText
+        android:id="@+id/txt_address"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Input Address"/>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/btn_submit"
+            android:layout_weight="0.5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Submit"/>
+        <Button
+            android:id="@+id/btn_cancel"
+            android:layout_weight="0.5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Cancel"/>
+    </LinearLayout>
+</LinearLayout>
+
+Adapter.java
+package fery.crudsqlite.adapter;
+import android.app.Activity;
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.TextView;
+import fery.sqlite.R;
+import java.util.List;
+import fery.crudsqlite.model.Data;
+
+public class Adapter extends BaseAdapter {
+    private Activity activity;
+    private LayoutInflater inflater;
+    private List<Data> items;
+    public Adapter(Activity activity, List<Data> items) {
+        this.activity = activity;
+        this.items = items;
+    }
+    @Override
+    public int getCount() {
+        return items.size();
+    }
+    @Override
+    public Object getItem(int location) {
+        return items.get(location);
+    }
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        if (inflater == null)
+            inflater = (LayoutInflater) activity
+                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        if (convertView == null)
+            convertView = inflater.inflate(R.layout.list_row, null);
+        TextView id = (TextView) convertView.findViewById(R.id.id);
+        TextView name = (TextView) convertView.findViewById(R.id.name);
+        TextView address = (TextView) convertView.findViewById(R.id.address);
+        Data data = items.get(position);
+        id.setText(data.getId());
+        name.setText(data.getName());
+        address.setText(data.getAddress());
+        return convertView;
+    }
+    
+    Data.java
+    package fery.crudsqlite.model;
+public class Data {
+    private String id, name, address;
+    public Data() {
+    }
+    public Data(String id, String name, String address) {
+        this.id = id;
+        this.name = name;
+        this.address = address;
+    }
+    public String getId() {
+        return id;
+    }
+    public void setId(String id) {
+        this.id = id;
+    }
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+    public String getAddress() {
+        return address;
+    }
+    public void setAddress(String address) {
+        this.address = address;
+    }
+}
+
+DbHelper.java
+package fery.crudsqlite.helper;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+public class DbHelper extends SQLiteOpenHelper {
+    private static final int DATABASE_VERSION = 2;
+    static final String DATABASE_NAME = "ferysqlite.db";
+    public static final String TABLE_SQLite = "sqlite";
+    public static final String COLUMN_ID = "id";
+    public static final String COLUMN_NAME = "name";
+    public static final String COLUMN_ADDRESS = "address";
+    public DbHelper(Context context) {
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    }
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+        final String SQL_CREATE_MOVIE_TABLE = "CREATE TABLE " + TABLE_SQLite + " (" +
+                COLUMN_ID + " INTEGER PRIMARY KEY autoincrement, " +
+                COLUMN_NAME + " TEXT NOT NULL, " +
+                COLUMN_ADDRESS + " TEXT NOT NULL" +
+                " )";
+        db.execSQL(SQL_CREATE_MOVIE_TABLE);
+    }
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_SQLite);
+        onCreate(db);
+    }
+    public ArrayList<HashMap<String, String>> getAllData() {
+        ArrayList<HashMap<String, String>> wordList;
+        wordList = new ArrayList<HashMap<String, String>>();
+        String selectQuery = "SELECT * FROM " + TABLE_SQLite;
+        SQLiteDatabase database = this.getWritableDatabase();
+        Cursor cursor = database.rawQuery(selectQuery, null);
+        if (cursor.moveToFirst()) {
+            do {
+                HashMap<String, String> map = new HashMap<String, String>();
+                map.put(COLUMN_ID, cursor.getString(0));
+                map.put(COLUMN_NAME, cursor.getString(1));
+                map.put(COLUMN_ADDRESS, cursor.getString(2));
+                wordList.add(map);
+            } while (cursor.moveToNext());
+        }
+        Log.e("select sqlite ", "" + wordList);
+        database.close();
+        return wordList;
+    }
+    public void insert(String name, String address) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        String queryValues = "INSERT INTO " + TABLE_SQLite + " (name, address) " +
+                "VALUES ('" + name + "', '" + address + "')";
+        Log.e("insert sqlite ", "" + queryValues);
+        database.execSQL(queryValues);
+        database.close();
+    }
+    public void update(int id, String name, String address) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        String updateQuery = "UPDATE " + TABLE_SQLite + " SET "
+                + COLUMN_NAME + "='" + name + "', "
+                + COLUMN_ADDRESS + "='" + address + "'"
+                + " WHERE " + COLUMN_ID + "=" + "'" + id + "'";
+        Log.e("update sqlite ", updateQuery);
+        database.execSQL(updateQuery);
+        database.close();
+    }
+    public void delete(int id) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        String updateQuery = "DELETE FROM " + TABLE_SQLite + " WHERE " + COLUMN_ID + "=" + "'" + id + "'";
+        Log.e("update sqlite ", updateQuery);
+        database.execSQL(updateQuery);
+        database.close();
+    }
+}
+
+MainActivity.java
+package fery.crudsqlite;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListView;
+import fery.sqlite.R;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import fery.crudsqlite.adapter.Adapter;
+import fery.crudsqlite.helper.DbHelper;
+import fery.crudsqlite.model.Data;
+public class MainActivity extends AppCompatActivity {
+    ListView listView;
+    AlertDialog.Builder dialog;
+    List<Data> itemList = new ArrayList<Data>();
+    Adapter adapter;
+    DbHelper SQLite = new DbHelper(this);
+    public static final String TAG_ID = "id";
+    public static final String TAG_NAME = "name";
+    public static final String TAG_ADDRESS = "address";
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        SQLite = new DbHelper(getApplicationContext());
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        listView = (ListView) findViewById(R.id.list_view);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, AddEdit.class);
+                startActivity(intent);
+            }
+        });
+        adapter = new Adapter(MainActivity.this, itemList);
+        listView.setAdapter(adapter);
+        // tekan lama listview untuk edit dan delete
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(final AdapterView<?> parent, View view,
+                                           final int position, long id) {
+                // TODO Auto-generated method stub
+                final String idx = itemList.get(position).getId();
+                final String name = itemList.get(position).getName();
+                final String address = itemList.get(position).getAddress();
+                final CharSequence[] dialogitem = {"Edit", "Delete"};
+                dialog = new AlertDialog.Builder(MainActivity.this);
+                dialog.setCancelable(true);
+                dialog.setItems(dialogitem, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // TODO Auto-generated method stub
+                        switch (which) {
+                            case 0:
+                                Intent intent = new Intent(MainActivity.this, AddEdit.class);
+                                intent.putExtra(TAG_ID, idx);
+                                intent.putExtra(TAG_NAME, name);
+                                intent.putExtra(TAG_ADDRESS, address);
+                                startActivity(intent);
+                                break;
+                            case 1:
+                                SQLite.delete(Integer.parseInt(idx));
+                                itemList.clear();
+                                getAllData();
+                                break;
+                        }
+                    }
+                }).show();
+                return false;
+            }
+        });
+        getAllData();
+    }
+    private void getAllData() {
+        ArrayList<HashMap<String, String>> row = SQLite.getAllData();
+        for (int i = 0; i < row.size(); i++) {
+            String id = row.get(i).get(TAG_ID);
+            String poster = row.get(i).get(TAG_NAME);
+            String title = row.get(i).get(TAG_ADDRESS);
+            Data data = new Data();
+            data.setId(id);
+            data.setName(poster);
+            data.setAddress(title);
+            itemList.add(data);
+        }
+        adapter.notifyDataSetChanged();
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        itemList.clear();
+        getAllData();
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+}
+
+AddEdit.java
+package fery.crudsqlite;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+import fery.sqlite.R;
+import fery.crudsqlite.helper.DbHelper;
+public class AddEdit extends AppCompatActivity {
+    EditText txt_id, txt_name, txt_address;
+    Button btn_submit, btn_cancel;
+    DbHelper SQLite = new DbHelper(this);
+    String id, name, address;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_add_edit);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        txt_id = (EditText) findViewById(R.id.txt_id);
+        txt_name = (EditText) findViewById(R.id.txt_name);
+        txt_address = (EditText) findViewById(R.id.txt_address);
+        btn_submit = (Button) findViewById(R.id.btn_submit);
+        btn_cancel = (Button) findViewById(R.id.btn_cancel);
+        id = getIntent().getStringExtra(MainActivity.TAG_ID);
+        name = getIntent().getStringExtra(MainActivity.TAG_NAME);
+        address = getIntent().getStringExtra(MainActivity.TAG_ADDRESS);
+        if (id == null || id == "") {
+            setTitle("Add Data");
+        } else {
+            setTitle("Edit Data");
+            txt_id.setText(id);
+            txt_name.setText(name);
+            txt_address.setText(address);
+        }
+        btn_submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    if (txt_id.getText().toString().equals("")) {
+                        save();
+                    } else {
+                        edit();
+                    }
+                } catch (Exception e){
+                    Log.e("Submit", e.toString());
+                }
+            }
+        });
+        btn_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                blank();
+                finish();
+            }
+        });
+    }
+    @Override
+    public void onBackPressed() {
+        finish();
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                blank();
+                this.finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+    // Make blank all Edit Text
+    private void blank() {
+        txt_name.requestFocus();
+        txt_id.setText(null);
+        txt_name.setText(null);
+        txt_address.setText(null);
+    }
+    // Save data to SQLite database
+    private void save() {
+        if (String.valueOf(txt_name.getText()).equals(null) || String.valueOf(txt_name.getText()).equals("") ||
+                String.valueOf(txt_address.getText()).equals(null) || String.valueOf(txt_address.getText()).equals("")) {
+            Toast.makeText(getApplicationContext(),
+                    "Please input name or address ...", Toast.LENGTH_SHORT).show();
+        } else {
+            SQLite.insert(txt_name.getText().toString().trim(), txt_address.getText().toString().trim());
+            blank();
+            finish();
+        }
+    }
+    // Update data in SQLite database
+    private void edit() {
+        if (String.valueOf(txt_name.getText()).equals(null) || String.valueOf(txt_name.getText()).equals("") ||
+                String.valueOf(txt_address.getText()).equals(null) || String.valueOf(txt_address.getText()).equals("")) {
+            Toast.makeText(getApplicationContext(),
+                    "Please input name or address ...", Toast.LENGTH_SHORT).show();
+        } else {
+            SQLite.update(Integer.parseInt(txt_id.getText().toString().trim()), txt_name.getText().toString().trim(),
+                    txt_address.getText().toString().trim());
+            blank();
+            finish();
+        }
+    }
+}
